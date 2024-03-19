@@ -57,6 +57,7 @@ class GNBG:
         RotationMatrix,
         OptimumValue,
         OptimumPosition,
+        FID,
     ):
         self.MaxEvals = MaxEvals
         self.AcceptanceThreshold = AcceptanceThreshold
@@ -77,9 +78,10 @@ class GNBG:
         self.FE = 0
         self.AcceptanceReachPoint = np.inf
         self.BestFoundResult = np.inf
+        self.FID = FID
 
     def __call__(self, x: np.ndarray) -> float:
-        return self.fitness(np.array([x]))
+        return self.fitness(np.array([x]))[0]
 
     def fitness(self, X):
         SolutionNumber = X.shape[0]
@@ -166,6 +168,7 @@ class GNBG:
             RotationMatrix,
             OptimumValue,
             OptimumPosition,
+            problem_index,
         )
 
     def plot(self, yscale: str | None = None) -> None:

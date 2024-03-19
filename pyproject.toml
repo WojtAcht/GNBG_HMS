@@ -11,6 +11,8 @@ numpy = "^1.26.4"
 scipy = "^1.12.0"
 matplotlib = "^3.8.3"
 pyhms = {git = "https://github.com/agh-a2s/pyhms", rev = "main"}
+pyade-python = "^1.1"
+multiprocess = "^0.70.16"
 
 
 [tool.poetry.group.dev.dependencies]
