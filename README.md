@@ -6,6 +6,8 @@ poetry install --with dev
 python3 -m gnbg
 ```
 
+Then use `results.ipynb` to inspect results.
+
 In order to use local `pyhms` edit `pyproject.toml`:
 ```
 pyhms = {path = "../pyhms", develop = true}
