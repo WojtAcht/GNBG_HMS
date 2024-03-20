@@ -1,3 +1,5 @@
+from time import time
+
 import numpy as np
 import pandas as pd
 from multiprocess import Pool
@@ -25,11 +27,12 @@ class GNBGProblemEvaluator:
             try:
                 solution = solver(problem, max_n_evals, random_state)
                 fitness_values.append(solution.fitness - problem.OptimumValue)
-            except Exception:
-                continue
+            except Exception as exc:
+                print(f"{solver.__class__.__name__} failed, {exc}")
         return np.array(fitness_values)
 
     def evaluate_problem(self, problem: GNBG) -> pd.DataFrame:
+        start = time()
         rows = []
         for solver in self.solvers:
             fitness_values = self.evaluate_solver(solver, problem, self.max_n_evals)
@@ -41,6 +44,8 @@ class GNBGProblemEvaluator:
                     "fitness_std": np.std(fitness_values),
                 }
             )
+        end = time()
+        print(f"Problem {problem.FID} evaluated in {(end - start):.2f} seconds")
         return pd.DataFrame(rows)
 
     def __call__(self) -> pd.DataFrame:
