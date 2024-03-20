@@ -1,4 +1,5 @@
 import random
+from typing import TypedDict
 
 import numpy as np
 import pyade.ilshade
@@ -7,8 +8,13 @@ from ..problem_instance import GNBG
 from .solver import Solution, Solver
 
 
+class ILSHADEConfig(TypedDict, total=False):
+    population_size: int
+    memory_size: int
+
+
 class ILSHADESolver(Solver):
-    def __init__(self, config: dict = {}):
+    def __init__(self, config: ILSHADEConfig | None = {}):
         self.config = config
 
     def __call__(
@@ -26,9 +32,8 @@ class ILSHADESolver(Solver):
             [[problem.MinCoordinate, problem.MaxCoordinate]] * problem.Dimension,
             dtype=float,
         )
-        if self.config:
-            params["population_size"] = self.config["popsize"]
-            params["memory_size"] = self.config["archivesize"]
+        for key, value in self.config.items():
+            params[key] = value
         params["func"] = problem
         params["max_evals"] = max_n_evals
         params["seed"] = random_state
