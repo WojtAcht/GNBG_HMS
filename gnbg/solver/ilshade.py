@@ -3,6 +3,7 @@ from typing import TypedDict
 
 import numpy as np
 import pyade.ilshade
+from ConfigSpace import ConfigurationSpace
 
 from ..problem_instance import GNBG
 from .solver import Solution, Solver
@@ -13,9 +14,12 @@ class ILSHADEConfig(TypedDict, total=False):
     memory_size: int
 
 
+DEFAULT_ILSHADE_CONFIG: ILSHADEConfig = {}
+
+
 class ILSHADESolver(Solver):
     def __init__(self, config: ILSHADEConfig | None = {}):
-        self.config = config
+        self.config = DEFAULT_ILSHADE_CONFIG | config
 
     def __call__(
         self,
@@ -39,3 +43,12 @@ class ILSHADESolver(Solver):
         params["seed"] = random_state
         x, fitness = algorithm.apply(**params)
         return Solution(x, fitness, problem)
+
+    @property
+    def configspace(self) -> ConfigurationSpace:
+        ConfigurationSpace(
+            {
+                "population_size": (10, 300),
+                "memory_size": (1, 20),
+            }
+        )

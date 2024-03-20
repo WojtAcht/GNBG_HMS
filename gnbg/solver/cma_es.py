@@ -3,6 +3,7 @@ from typing import TypedDict
 
 import numpy as np
 from cma import fmin
+from ConfigSpace import ConfigurationSpace
 
 from ..problem_instance import GNBG
 from .solver import Solution, Solver
@@ -19,7 +20,7 @@ class CMAESConfig(TypedDict, total=False):
     restart_from_best: bool
 
 
-DEFAULT_CMAES_CONFIG = {
+DEFAULT_CMAES_CONFIG: CMAESConfig = {
     "sigma0": 1.0,
     "incpopsize": 1,
     "restarts": 10,
@@ -29,7 +30,6 @@ DEFAULT_CMAES_CONFIG = {
 
 class CMAESSolver(Solver):
     def __init__(self, config: CMAESConfig = {}):
-        # Prepopulate the config with default values:
         self.config = DEFAULT_CMAES_CONFIG | config
 
     def __call__(
@@ -61,3 +61,14 @@ class CMAESSolver(Solver):
             incpopsize=self.config["incpopsize"],
         )
         return Solution(res[0], res[1], problem)
+
+    @property
+    def configspace(self) -> ConfigurationSpace:
+        return ConfigurationSpace(
+            {
+                "popsize": (10, 100),
+                "sigma0": (0.5, 7.5),
+                "incpopsize": (1, 5),
+                "tolfun": (1e-15, 1e-8),
+            }
+        )

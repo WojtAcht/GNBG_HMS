@@ -136,3 +136,5 @@ dmypy.json
 *.dat
 *.gdat
 *.mp4
+
+smac3_output/*

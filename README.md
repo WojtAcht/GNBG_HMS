@@ -3,6 +3,7 @@
 To run:
 ```
 poetry install --with dev
+poetry shell
 python3 -m gnbg
 ```
 
@@ -11,6 +12,12 @@ Then use `results.ipynb` to inspect results.
 In order to use local `pyhms` edit `pyproject.toml`:
 ```
 pyhms = {path = "../pyhms", develop = true}
+```
+
+To run Tuner use:
+```
+poetry shell 
+python3 -m gnbg.tuner
 ```
 
 ### Original README
