@@ -5,7 +5,7 @@ import pandas as pd
 from multiprocess import Pool
 
 from .problem_instance import GNBG
-from .solver import CMAESSolver, HMSSolver, ILSHADESolver, Solver
+from .solver import CMAESSolver, HMSDESolver, HMSSolver, ILSHADESolver, Solver
 
 
 class GNBGProblemEvaluator:
@@ -55,7 +55,12 @@ class GNBGProblemEvaluator:
         return pd.concat(pool_outputs)
 
 
-solvers = [ILSHADESolver(), CMAESSolver(), HMSSolver()]
+solvers = [
+    ILSHADESolver.from_config(),
+    CMAESSolver.from_config(),
+    HMSSolver.from_config(),
+    HMSDESolver.from_config(),
+]
 
 evaluator = GNBGProblemEvaluator(solvers, seed_count=10)
 results = evaluator()

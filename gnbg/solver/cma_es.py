@@ -1,3 +1,4 @@
+import json
 import random
 from typing import TypedDict
 
@@ -72,3 +73,9 @@ class CMAESSolver(Solver):
                 "tolfun": (1e-15, 1e-8),
             }
         )
+
+    @classmethod
+    def from_config(cls) -> "CMAESSolver":
+        with open(f"config/{cls.__name__}.json", "r") as json_file:
+            config = json.load(json_file)
+        return cls(config)

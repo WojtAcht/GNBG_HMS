@@ -16,7 +16,7 @@ pyhms = {path = "../pyhms", develop = true}
 
 To run Tuner use:
 ```
-poetry shell 
+poetry shell
 python3 -m gnbg.tuner
 ```
 

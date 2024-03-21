@@ -1,8 +1,11 @@
-from .solver import Solver, CMAESSolver
-from smac import HyperparameterOptimizationFacade, Scenario
-from .problem_instance import GNBG
-import numpy as np
+import json
 from typing import Type
+
+import numpy as np
+from smac import HyperparameterOptimizationFacade, Scenario
+
+from .problem_instance import GNBG
+from .solver import CMAESSolver, HMSDESolver, HMSSolver, ILSHADESolver, Solver
 
 
 class Tuner:
@@ -30,9 +33,7 @@ class Tuner:
         best_found_config = experiment.optimize()
         return best_found_config.get_dictionary()
 
-    def evaluate_solver(
-        self, solver_class: Type[Solver], config: dict, seed: int
-    ) -> np.ndarray:
+    def evaluate_solver(self, solver_class: Type[Solver], config: dict, seed: int) -> np.ndarray:
         fitness_values = []
         for fid in range(1, 25):
             problem = GNBG.read_from_file(fid)
@@ -46,6 +47,14 @@ class Tuner:
 
 
 if __name__ == "__main__":
-    tuner = Tuner(max_n_evals=10000, n_trials=1000)
-    best_config = tuner(CMAESSolver)
-    print(best_config)
+    solver_classes: list[Type[Solver]] = [
+        HMSDESolver,
+        HMSSolver,
+        ILSHADESolver,
+        CMAESSolver,
+    ]
+    for solver_class in solver_classes:
+        tuner = Tuner(max_n_evals=10000, n_trials=1000)
+        best_config = tuner(solver_class)
+        with open(f"config/{solver_class().__class__.__name__}.json", "w") as json_file:
+            json.dump(best_config, json_file)

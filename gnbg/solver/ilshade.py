@@ -1,3 +1,4 @@
+import json
 import random
 from typing import TypedDict
 
@@ -14,12 +15,9 @@ class ILSHADEConfig(TypedDict, total=False):
     memory_size: int
 
 
-DEFAULT_ILSHADE_CONFIG: ILSHADEConfig = {}
-
-
 class ILSHADESolver(Solver):
     def __init__(self, config: ILSHADEConfig | None = {}):
-        self.config = DEFAULT_ILSHADE_CONFIG | config
+        self.config = config
 
     def __call__(
         self,
@@ -46,9 +44,15 @@ class ILSHADESolver(Solver):
 
     @property
     def configspace(self) -> ConfigurationSpace:
-        ConfigurationSpace(
+        return ConfigurationSpace(
             {
                 "population_size": (10, 300),
                 "memory_size": (1, 20),
             }
         )
+
+    @classmethod
+    def from_config(cls) -> "ILSHADESolver":
+        with open(f"config/{cls.__name__}.json", "r") as json_file:
+            config = json.load(json_file)
+        return cls(config)

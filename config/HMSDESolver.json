@@ -1,0 +1,1 @@
+{"cma_generations": 23, "cma_metaepochs": 145, "cma_sigma0": 1.7049668182000481, "de_crossover": 0.45835897471098463, "de_dither": false, "de_generations": 1, "de_pop_size": 104, "de_scaling": 1.9618835068862988, "level_limit": 2, "nbc_cut": 3.940484245188693, "nbc_far": 1.9079434267352329, "nbc_trunc": 0.8027836803716046}

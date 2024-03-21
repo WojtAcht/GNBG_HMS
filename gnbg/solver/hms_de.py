@@ -1,4 +1,3 @@
-import json
 from typing import TypedDict
 
 import numpy as np
@@ -8,22 +7,31 @@ from pyhms import (
     SEA,
     CMALevelConfig,
     DontStop,
-    EALevelConfig,
+    DELevelConfig,
     EvalCutoffProblem,
     MetaepochLimit,
     SingularProblemEvalLimitReached,
     hms,
 )
-from pyhms.sprout import DemeLimit, LevelLimit, NBC_FarEnough, NBC_Generator, SproutMechanism
+from pyhms.sprout import (
+    DemeLimit,
+    LevelLimit,
+    NBC_FarEnough,
+    NBC_Generator,
+    SproutMechanism,
+)
 
 from ..problem_instance import GNBG
 from .solver import Solution, Solver
+import json
 
 
-class HMSConfig(TypedDict, total=False):
-    ea_generations: int
-    ea_pop_size: int
-    ea_mutation_std: float
+class HMSDEConfig(TypedDict, total=False):
+    de_generations: int
+    de_pop_size: int
+    de_dither: bool
+    de_scaling: float
+    de_crossover: float
     cma_generations: int
     cma_sigma0: float | None
     cma_metaepochs: int
@@ -33,10 +41,12 @@ class HMSConfig(TypedDict, total=False):
     level_limit: int
 
 
-DEFAULT_HMS_CONFIG: HMSConfig = {
-    "ea_generations": 2,
-    "ea_pop_size": 20,
-    "ea_mutation_std": 10.0,
+DEFAULT_HMS_DE_CONFIG: HMSDEConfig = {
+    "de_generations": 2,
+    "de_pop_size": 20,
+    "de_dither": False,
+    "de_scaling": 0.8,
+    "de_crossover": 0.9,
     "cma_generations": 5,
     "cma_sigma0": None,
     "cma_metaepochs": 15,
@@ -47,9 +57,9 @@ DEFAULT_HMS_CONFIG: HMSConfig = {
 }
 
 
-class HMSSolver(Solver):
-    def __init__(self, config: HMSConfig = {}):
-        self.config = DEFAULT_HMS_CONFIG | config
+class HMSDESolver(Solver):
+    def __init__(self, config: HMSDEConfig = {}):
+        self.config = DEFAULT_HMS_DE_CONFIG | config
 
     def __call__(
         self,
@@ -63,16 +73,16 @@ class HMSSolver(Solver):
             [[problem.MinCoordinate, problem.MaxCoordinate]] * problem.Dimension,
             dtype=float,
         )
-
         config = [
-            EALevelConfig(
-                ea_class=SEA,
-                generations=self.config["ea_generations"],
+            DELevelConfig(
+                generations=self.config["de_generations"],
                 problem=problem_with_cutoff,
                 bounds=bounds,
-                pop_size=self.config["ea_pop_size"],
-                mutation_std=self.config["ea_mutation_std"],
+                pop_size=self.config["de_pop_size"],
                 lsc=DontStop(),
+                dither=self.config["de_dither"],
+                scaling=self.config["de_scaling"],
+                crossover=self.config["de_crossover"],
             ),
             CMALevelConfig(
                 generations=self.config["cma_generations"],
@@ -94,7 +104,9 @@ class HMSSolver(Solver):
             sprout_condition,
             {"random_seed": random_state},
         )
-        return Solution(hms_tree.best_individual.genome, hms_tree.best_individual.fitness, problem)
+        return Solution(
+            hms_tree.best_individual.genome, hms_tree.best_individual.fitness, problem
+        )
 
     @property
     def configspace(self) -> ConfigurationSpace:
@@ -104,9 +116,11 @@ class HMSSolver(Solver):
                 "nbc_trunc": (0.1, 0.9),
                 "nbc_far": (1.5, 4.0),
                 "level_limit": (2, 10),
-                "ea_pop_size": (20, 300),
-                "ea_generations": (1, 10),
-                "ea_mutation_std": (0.25, 3.0),
+                "de_pop_size": (20, 300),
+                "de_generations": (1, 10),
+                "de_dither": [False, True],
+                "de_scaling": (0.0, 2.0),
+                "de_crossover": (0.0, 1.0),
                 "cma_generations": (3, 30),
                 "cma_metaepochs": (30, 300),
                 "cma_sigma0": (0.1, 3.0),
@@ -114,7 +128,7 @@ class HMSSolver(Solver):
         )
 
     @classmethod
-    def from_config(cls) -> "HMSSolver":
+    def from_config(cls) -> "HMSDESolver":
         with open(f"config/{cls.__name__}.json", "r") as json_file:
             config = json.load(json_file)
         return cls(config)
