@@ -1,3 +1,4 @@
+import json
 from typing import TypedDict
 
 import numpy as np
@@ -6,24 +7,17 @@ from leap_ec.problem import FunctionProblem
 from pyhms import (
     SEA,
     CMALevelConfig,
-    DontStop,
     DELevelConfig,
+    DontStop,
     EvalCutoffProblem,
     MetaepochLimit,
     SingularProblemEvalLimitReached,
     hms,
 )
-from pyhms.sprout import (
-    DemeLimit,
-    LevelLimit,
-    NBC_FarEnough,
-    NBC_Generator,
-    SproutMechanism,
-)
+from pyhms.sprout import DemeLimit, LevelLimit, NBC_FarEnough, NBC_Generator, SproutMechanism
 
 from ..problem_instance import GNBG
 from .solver import Solution, Solver
-import json
 
 
 class HMSDEConfig(TypedDict, total=False):
@@ -104,9 +98,7 @@ class HMSDESolver(Solver):
             sprout_condition,
             {"random_seed": random_state},
         )
-        return Solution(
-            hms_tree.best_individual.genome, hms_tree.best_individual.fitness, problem
-        )
+        return Solution(hms_tree.best_individual.genome, hms_tree.best_individual.fitness, problem)
 
     @property
     def configspace(self) -> ConfigurationSpace:
