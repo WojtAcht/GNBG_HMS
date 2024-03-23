@@ -98,7 +98,12 @@ class HMSDESolver(Solver):
             sprout_condition,
             {"random_seed": random_state},
         )
-        return Solution(hms_tree.best_individual.genome, hms_tree.best_individual.fitness, problem)
+        return Solution(
+            hms_tree.best_individual.genome,
+            hms_tree.best_individual.fitness,
+            problem,
+            hms_tree,
+        )
 
     @property
     def configspace(self) -> ConfigurationSpace:

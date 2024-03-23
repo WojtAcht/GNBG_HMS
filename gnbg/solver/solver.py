@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Protocol
+from typing import Any, Protocol
 
 import numpy as np
 from ConfigSpace import ConfigurationSpace
@@ -12,6 +12,7 @@ class Solution:
     x: np.ndarray
     fitness: float
     problem: GNBG
+    optimizer_result: Any
 
 
 class Solver(Protocol):

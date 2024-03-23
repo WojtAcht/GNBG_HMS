@@ -40,7 +40,7 @@ class ILSHADESolver(Solver):
         params["max_evals"] = max_n_evals
         params["seed"] = random_state
         x, fitness = algorithm.apply(**params)
-        return Solution(x, fitness, problem)
+        return Solution(x, fitness, problem, None)
 
     @property
     def configspace(self) -> ConfigurationSpace:

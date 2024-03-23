@@ -61,7 +61,7 @@ class CMAESSolver(Solver):
             restarts=self.config["restarts"],
             incpopsize=self.config["incpopsize"],
         )
-        return Solution(res[0], res[1], problem)
+        return Solution(res[0], res[1], problem, res)
 
     @property
     def configspace(self) -> ConfigurationSpace:
